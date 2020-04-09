@@ -7,6 +7,7 @@ const connectionString = 'mongodb://127.0.0.1:27017/'
 
 
 app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 
 MongoClient.connect(connectionString, {
     useNewUrlParser:true,
@@ -14,41 +15,46 @@ MongoClient.connect(connectionString, {
 })
     .then((client) => {
         console.log('Connected to database')
-        const db = client.db('Movie')
-        const collection = db.collection('Movies')
+        const db = client.db('Movies')
+        const collection = db.collection('movie')
 
         //READ
         app.get('/movie', (req, res) => {
-            db.collection('Movies').find({}).toArray()
+            db.collection('movie').find({}).toArray()
                 .then((result) => {
-                    console.log(result, 'ketembak nich')
-                    // res.sendFile(__dirname + '/index.html')
-                    res.json(result)
+                    res.status(200).json(result)
                 }).catch((err) => {
-                    console.log(err)
+                    res.status(500).json({
+                        err: err.message
+                    })
                 });
         })
 
         //CREATE
         app.post('/movie', (req, res) => {
-            console.log(req.body)
-            collection.insertOne(req.body)
+            db.collection('movie').insertOne(req.body)
                 .then((result) => {
-                    console.log(result)
-                    res.redirect('/')
+                    res.status(201).json({
+                        result
+                    })
                 }).catch((err) => {
-                    console.log(err)
+                    res.status(500).json({
+                        err: err.message
+                    })
                 });
         })
 
         //UPDATE
         app.put('/movie/:id', (req, res) => {
-            collection.update({_id: ObjectId(req.params.id)}, {$set: req.body})
+            db.collection('movie').update({_id: ObjectId(req.params.id)}, {$set: req.body})
                 .then((result) => {
-                    console.log('data has been updated')
-                    res.redirect('/')
+                    res.status(200).json({
+                        result
+                    })
                 }).catch((err) => {
-                    console.log(err)
+                    res.status(500).json({
+                        err: err.message
+                    })
                 });
         })
 
@@ -56,10 +62,13 @@ MongoClient.connect(connectionString, {
         app.delete('/movie/:id', (req, res) => {
             collection.remove({_id: ObjectId(req.params.id)})
                 .then((result) => {
-                    console.log('Movie deleted')
-                    res.redirect('/')
+                    res.status(200).json({
+                        result
+                    })
                 }).catch((err) => {
-                    console.log(err)
+                    res.status(500).json({
+                        err: err.message
+                    })
                 });
         })
 

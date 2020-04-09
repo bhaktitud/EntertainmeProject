@@ -7,6 +7,7 @@ const connectionString = 'mongodb://127.0.0.1:27017/'
 
 
 app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 
 MongoClient.connect(connectionString, {
     useNewUrlParser:true,
@@ -21,45 +22,54 @@ MongoClient.connect(connectionString, {
         app.get('/tv', (req, res) => {
             db.collection('series').find({}).toArray()
                 .then((result) => {
-                    console.log(result)
-                    // res.sendFile(__dirname + '/index.html')
-                    res.json(result)
+                    res.status(200).json(result)
                 }).catch((err) => {
-                    console.log(err)
+                    res.status(500).json({
+                        err: err.message
+                    })
                 });
         })
 
         //CREATE
-        app.post('/tvseries', (req, res) => {
+        app.post('/tv', (req, res) => {
             console.log(req.body)
             collection.insertOne(req.body)
                 .then((result) => {
-                    console.log(result)
-                    res.redirect('/')
+                    res.status(201).json({
+                        result
+                    })
                 }).catch((err) => {
-                    console.log(err)
+                    res.status(500).json({
+                        err: err.message
+                    })
                 });
         })
 
         //UPDATE
-        app.put('/tvseries/:id', (req, res) => {
+        app.put('/tv/:id', (req, res) => {
             collection.update({_id: ObjectId(req.params.id)}, {$set: req.body})
                 .then((result) => {
-                    console.log('data has been updated')
-                    res.redirect('/')
+                    res.status(200).json({
+                        result
+                    })
                 }).catch((err) => {
-                    console.log(err)
+                    res.status(500).json({
+                        err: err.message
+                    })
                 });
         })
 
         //DELETE
-        app.delete('/tvseries/:id', (req, res) => {
+        app.delete('/tv/:id', (req, res) => {
             collection.remove({_id: ObjectId(req.params.id)})
                 .then((result) => {
-                    console.log('TV Series deleted')
-                    res.redirect('/')
+                    res.status(200).json({
+                        result
+                    })
                 }).catch((err) => {
-                    console.log(err)
+                    res.status(500).json({
+                        err: err.message
+                    })
                 });
         })
 
