@@ -18,10 +18,10 @@ MongoClient.connect(connectionString, {
         const collection = db.collection('Movies')
 
         //READ
-        app.get('/', (req, res) => {
+        app.get('/movie', (req, res) => {
             db.collection('Movies').find({}).toArray()
                 .then((result) => {
-                    console.log(result)
+                    console.log(result, 'ketembak nich')
                     // res.sendFile(__dirname + '/index.html')
                     res.json(result)
                 }).catch((err) => {

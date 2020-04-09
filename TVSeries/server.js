@@ -18,7 +18,7 @@ MongoClient.connect(connectionString, {
         const collection = db.collection('series')
 
         //READ
-        app.get('/', (req, res) => {
+        app.get('/tv', (req, res) => {
             db.collection('series').find({}).toArray()
                 .then((result) => {
                     console.log(result)
