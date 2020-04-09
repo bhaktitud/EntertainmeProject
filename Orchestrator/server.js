@@ -10,12 +10,44 @@ const redis = new Redis()
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
+app.get('/entertainme', (req, res) => {
+    redis
+        .get('entertainme')
+        .then((reply) => {
+            if(reply){
+                res.status(200).json(JSON.parse(reply))
+            } else {
+                return axios
+                    .all([
+                        axios.get('http://localhost:3001/movie'),
+                        axios.get('http://localhost:3002/tv')
+                    ])
+            }
+        })
+        .then( axios.spread((movies, series) => {
+            const data = {
+                movies: movies.data,
+                series: series.data
+            }
+            // console.log(movies.data, 'movies', series.data, '<<<< series')
+            redis.set('entertainme', JSON.stringify( data ))
+                .then((_) => {
+                    res.status(200).json(data)
+                })
+        }))
+        .catch((err) => {
+            res.status(500).json({
+                err: err.message
+            })
+        });
+})
+
 app.get('/movies', (req, res) => {
     redis
         .get('movies')
         .then((reply) => {
             if(reply) {
-                res.json(JSON.parse(reply))
+                res.status(200).json(JSON.parse(reply))
             } else {
                 return axios
                     .get('http://localhost:3001/movie')
@@ -37,13 +69,13 @@ app.get('/tv', (req, res) => {
         .get('tv')
         .then((reply) => {
             if(reply) {
-                res.json(JSON.parse(reply))
+                res.status(200).json(JSON.parse(reply))
             } else {
                 return axios
                     .get('http://localhost:3002/tv')
             }
         }).then(({ data }) => {
-            redis.set('tv', JSON.stringify( data ))
+            redis.set('tvSeries', JSON.stringify( data ))
                 .then((_) => {
                     res.status(200).json(data)
                 })
