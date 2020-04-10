@@ -37,9 +37,20 @@ const typeDefs = gql`
         tags: [String]
     }
 
+    input UpdateInput {
+        _id: ID!
+        title: String
+        overview: String
+        poster_path: String
+        popularity: Int
+        tags: [String]
+    }
+
     type Mutation {
         insertMovie(eventInput: EventInput): Movie
         insertSerie(eventInput: EventInput): Serie
+        updateMovie(eventInput: UpdateInput): Movie
+        updateSerie(eventInput: UpdateInput): Serie
         deleteMovie(_id: String!): Movie
         deleteSerie(_id: String!): Serie
 
@@ -57,6 +68,7 @@ const resolvers = {
             axios
                 .get('http://localhost:3001/movies')
                 .then(({ data }) => {
+                    // console.log(data)
                     return data
                 }).catch((err) => {
                     console.log(err)
@@ -73,29 +85,32 @@ const resolvers = {
 
     Mutation: {
         insertMovie: (_, payload) => {
+            const { title, overview, poster_path, popularity, tags } = payload.eventInput
             const movieData = {
-                title: payload.eventInput.title,
-                overview: payload.eventInput.overview,
-                poster_path: payload.eventInput.poster_path,
-                popularity: payload.eventInput.popularity,
-                tags: payload.eventInput.tags
+                title,
+                overview,
+                poster_path,
+                popularity,
+                tags
             }
             axios
                 .post('http://localhost:3001/movies', movieData)
-                .then(({ data }) => {       
-                    return data
+                .then(({ data }) => {   
+                    console.log(movieData)
+                    return movieData
                 }).catch((err) => {
                     return err
                 });
         },
 
         insertSerie: (_, payload) => {
+            const { title, overview, poster_path, popularity, tags } = payload.eventInput
             const serieData = {
-                title: payload.eventInput.title,
-                overview: payload.eventInput.overview,
-                poster_path: payload.eventInput.poster_path,
-                popularity: payload.eventInput.popularity,
-                tags: payload.eventInput.tags
+                title,
+                overview,
+                poster_path,
+                popularity,
+                tags
             }
             axios
                 .post('http://localhost:3002/tv', serieData)
@@ -106,7 +121,43 @@ const resolvers = {
                 });
         },
 
-        deleteMovie: (_, payload) => {
+        updateMovie: (_, payload) => {
+            const { _id, title, overview, poster_path, popularity, tags } = payload.eventInput
+            const movieData = {
+                title,
+                overview,
+                poster_path,
+                popularity,
+                tags
+            }
+            axios
+                .put(`http://localhost:3001/movies/${_id}`, movieData)
+                .then(({ data }) => {
+                    return data
+                }).catch((err) => {
+                    return err
+                });
+        },
+
+        updateSerie: (_, payload) => {
+            const { _id, title, overview, poster_path, popularity, tags } = payload.eventInput
+            const serieData = {
+                title,
+                overview,
+                poster_path,
+                popularity,
+                tags
+            }
+            axios
+                .put(`http://localhost:3002/tv/${_id}`, serieData)
+                .then(({ data }) => {
+                    return data
+                }).catch((err) => {
+                    return err
+                });
+        },
+
+        deleteMovie (_, payload) {
             const { _id } = payload
             axios
                 .delete(`http://localhost:3001/movies/${_id}`)
