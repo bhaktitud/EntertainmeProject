@@ -20,7 +20,7 @@ app.get('/entertainme', (req, res, next) => {
                 } else {
                     return axios
                         .all([
-                            axios.get('http://localhost:3001/movie'),
+                            axios.get('http://localhost:3001/movies'),
                             axios.get('http://localhost:3002/tv')
                         ])
                 }
@@ -56,7 +56,7 @@ app.get('/movies', (req, res) => {
                 res.status(200).json(JSON.parse(reply))
             } else {
                 return axios
-                    .get('http://localhost:3001/movie')
+                    .get('http://localhost:3001/movies')
             }
         }).then(({ data }) => {
             redis.set('movies', JSON.stringify( data ), (err) => {
@@ -101,7 +101,7 @@ app.get('/tv', (req, res) => {
 //post, put & delete
 app.post('/movies', (req, res) => {
     axios
-        .post('http://localhost:3001/movie', req.body)
+        .post('http://localhost:3001/movies', req.body)
         .then(({ data }) => {
             return redis.flushall((err) => {
                 if(err) throw err
@@ -136,7 +136,7 @@ app.post('/tv', (req, res) => {
 
 app.put('/movie/:id', (req, res) => {
     axios
-        .put(`http://localhost:3001/movie/${req.params.id}`, req.body)
+        .put(`http://localhost:3001/movies/${req.params.id}`, req.body)
         .then(({ data }) => {
             return redis.flushall((err) => {
                 if(err) throw err
@@ -171,7 +171,7 @@ app.put('/tv/:id', (req, res) => {
 app.delete('/movie/:id', (req, res) => {
     console.log(req.params.id)
     axios
-        .delete(`http://localhost:3001/movie/${req.params.id}`)
+        .delete(`http://localhost:3001/movies/${req.params.id}`)
         .then((_) => {
             return redis.flushall((err) => {
                 if(err) throw err

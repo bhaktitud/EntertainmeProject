@@ -19,7 +19,7 @@ MongoClient.connect(connectionString, {
         const collection = db.collection('movie')
 
         //READ
-        app.get('/movie', (req, res) => {
+        app.get('/movies', (req, res) => {
             db.collection('movie').find({}).toArray()
                 .then((result) => {
                     res.status(200).json(result)
@@ -31,7 +31,7 @@ MongoClient.connect(connectionString, {
         })
 
         //CREATE
-        app.post('/movie', (req, res) => {
+        app.post('/movies', (req, res) => {
             db.collection('movie').insertOne(req.body)
                 .then((result) => {
                     res.status(201).json({
@@ -45,7 +45,7 @@ MongoClient.connect(connectionString, {
         })
 
         //UPDATE
-        app.put('/movie/:id', (req, res) => {
+        app.put('/movies/:id', (req, res) => {
             db.collection('movie').update({_id: ObjectId(req.params.id)}, {$set: req.body})
                 .then((result) => {
                     res.status(200).json({
@@ -59,7 +59,7 @@ MongoClient.connect(connectionString, {
         })
 
         //DELETE
-        app.delete('/movie/:id', (req, res) => {
+        app.delete('/movies/:id', (req, res) => {
             collection.remove({_id: ObjectId(req.params.id)})
                 .then((result) => {
                     res.status(200).json({
