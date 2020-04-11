@@ -8,8 +8,6 @@ const axios = require('axios')
 const Redis = require('ioredis')
 const redis = new Redis()
 
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json())
 
 const typeDefs = gql`
     type Movie {
@@ -84,109 +82,89 @@ const resolvers = {
     },
 
     Mutation: {
-        insertMovie: (_, payload) => {
-            const { title, overview, poster_path, popularity, tags } = payload.eventInput
-            const movieData = {
-                title,
-                overview,
-                poster_path,
-                popularity,
-                tags
-            }
+        insertMovie: (_, payload) => 
             axios
-                .post('http://localhost:3001/movies', movieData)
-                .then(({ data }) => {   
-                    console.log(movieData)
-                    return movieData
+                .post('http://localhost:3001/movies', payload.eventInput)
+                .then(({ data }) => {
+                    return payload.eventInput
                 }).catch((err) => {
                     return err
-                });
-        },
+                }),
 
-        insertSerie: (_, payload) => {
-            const { title, overview, poster_path, popularity, tags } = payload.eventInput
-            const serieData = {
-                title,
-                overview,
-                poster_path,
-                popularity,
-                tags
-            }
+        insertSerie: (_, payload) => 
             axios
-                .post('http://localhost:3002/tv', serieData)
+                .post('http://localhost:3002/tv', payload.eventInput)
                 .then(({ data }) => {       
-                    return data
+                    return payload.eventInput
                 }).catch((err) => {
                     return err
-                });
-        },
+                }),
 
-        updateMovie: (_, payload) => {
-            const { _id, title, overview, poster_path, popularity, tags } = payload.eventInput
-            const movieData = {
-                title,
-                overview,
-                poster_path,
-                popularity,
-                tags
-            }
+        updateMovie: (_, payload) =>
             axios
-                .put(`http://localhost:3001/movies/${_id}`, movieData)
-                .then(({ data }) => {
-                    return data
+                .put(`http://localhost:3001/movies/${payload.eventInput._id}`, {
+                    title: payload.eventInput.title,
+                    overview: payload.eventInput.overview,
+                    poster_path: payload.eventInput.poster_path,
+                    popularity: payload.eventInput.popularity,
+                    tags: payload.eventInput.tags,
+                })
+                .then(function ({ data }) {
+                    return payload.eventInput
                 }).catch((err) => {
                     return err
-                });
-        },
+                }), 
 
-        updateSerie: (_, payload) => {
-            const { _id, title, overview, poster_path, popularity, tags } = payload.eventInput
-            const serieData = {
-                title,
-                overview,
-                poster_path,
-                popularity,
-                tags
-            }
+        updateSerie: (_, payload) => 
             axios
-                .put(`http://localhost:3002/tv/${_id}`, serieData)
+                .put(`http://localhost:3002/tv/${payload.eventInput._id}`, {
+                    title: payload.eventInput.title,
+                    overview: payload.eventInput.overview,
+                    poster_path: payload.eventInput.poster_path,
+                    popularity: payload.eventInput.popularity,
+                    tags: payload.eventInput.tags,
+                })
                 .then(({ data }) => {
-                    return data
+                    return payload.eventInput
                 }).catch((err) => {
                     return err
-                });
-        },
+                }),
 
-        deleteMovie (_, payload) {
-            const { _id } = payload
+        deleteMovie: (_, payload) =>
             axios
-                .delete(`http://localhost:3001/movies/${_id}`)
+                .delete(`http://localhost:3001/movies/${payload._id}`)
                 .then(({ data }) => {
-                    return _id
+                    return payload
                 }).catch((err) => {
                     return err
-                });
-        },
+                }),
 
-        deleteSerie: (_, payload) => {
-            const { _id } = payload
+        deleteSerie: (_, payload) =>
             axios
-                .delete(`http://localhost:3002/tv/${_id}`)
+                .delete(`http://localhost:3002/tv/${payload._id}`)
                 .then(({ data }) => {
-                    return _id
+                    return payload
                 }).catch((err) => {
                     return err
-                });
-        }
+                })
+        
     }
 }
 
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 
 const server = new ApolloServer({
     typeDefs: typeDefs,
-    resolvers: resolvers
+    resolvers: resolvers,
 })
 
+// server.applyMiddleware({app})
+
 server.listen().then(({ url }) => {
-    console.log(`Server up and running on ${url}`);
+    console.log(`🚀 Server up and running on ${url}`);
 })
+
+// app.listen({ port: 4000 }, () =>
+//   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+// );
