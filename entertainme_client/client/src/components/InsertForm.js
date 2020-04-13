@@ -33,6 +33,18 @@ const INSERT_DATA = gql`
     }
 `;
 
+const MOVIES = gql`
+    query {
+        movies {
+            title
+            overview
+            poster_path
+            popularity
+            tags
+        }
+    }
+`;
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -74,7 +86,15 @@ export default function InsertForm () {
 
     const classes = useStyles();
 
-    const [insertMovie ] = useMutation(INSERT_DATA)
+    const [insertMovie ] = useMutation(INSERT_DATA, {
+        update(cache, { data : { insertMovie } }) {
+            const { movies } = cache.readQuery({ query: MOVIES });
+            cache.writeQuery({
+                query: MOVIES,
+                data: { movies: movies.concat([insertMovie]) }
+            })
+        }
+    })
 
     //localState
     const [ newTitle, setNewTitle ] = useState('')
@@ -87,20 +107,22 @@ export default function InsertForm () {
     const open = useSelector(state => state.modalStatus)
 
     const handleAddChip = (chips) => {
-        setNewTags([...newTags, chips])
+        setNewTags([...newTags, ...chips])
     }
 
     const handleOnSubmit = (e) => {
         e.preventDefault()
         // console.log(newTitle, newOverview, newPoster, newPopularity, newTags[newTags.length-1])
         insertMovie({
-            variables: {eventInput:{
-                title: newTitle,
-                overview: newOverview,
-                poster_path: newPoster,
-                popularity: newPopularity,
-                tags: newTags
-            }}
+            variables: {
+                eventInput: {
+                    title: newTitle,
+                    overview: newOverview,
+                    poster_path: newPoster,
+                    popularity: newPopularity,
+                    tags: newTags
+                }
+            }
         })
     }
 
@@ -134,7 +156,7 @@ export default function InsertForm () {
                     <TextField id="movie-title" label="title" value={newTitle} onChange={(e) => setNewTitle(e.target.value)}/>
                     <TextField id="movie-overview" label="overview" value={newOverview} onChange={(e) => setNewOverview(e.target.value)} />
                     <TextField id="movie-poster" label="poster path" value={newPoster} onChange={(e) => setNewPoster(e.target.value)} />
-                    <TextField id="movie-popularity" label="popularity" value={newPopularity} onChange={(e) => setNewPopularity(e.target.value)}/>
+                    <TextField id="movie-popularity" label="popularity" value={newPopularity} onChange={(e) => setNewPopularity(Number(e.target.value))}/>
                     <ChipInput
                         value={newTags}
                         onChange={(chips) => handleAddChip(chips)}

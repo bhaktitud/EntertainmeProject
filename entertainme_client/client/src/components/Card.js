@@ -76,8 +76,15 @@ const useStyles = makeStyles((theme) => ({
     right: '1rem',
     fontFamily: "'Bangers', cursive"
   },
-  ChipTags: {
+  chip: {
     color: 'white'
+  },
+  ChipContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: '100%',
+    marginTop: '5%'
   }
   
 }));
@@ -121,9 +128,19 @@ export default function CardComponent(props) {
                   {overview}
                 </Typography>
               </Container>
-              <Typography variant="body2" component="p">
-                
-              </Typography>
+              <Container className={classes.ChipContainer}>
+                <Typography variant="body2" component="p">
+                  {tags.map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={tag}
+                      variant='outlined'
+                      className={classes.chip}
+                      size="small"
+                    />
+                  ))}
+                </Typography>
+              </Container>
             </CardContent>
             </CardActionArea>
             <CardActions className={classes.CardActionContainer}>

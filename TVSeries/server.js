@@ -32,11 +32,10 @@ MongoClient.connect(connectionString, {
 
         //CREATE
         app.post('/tv', (req, res) => {
-            console.log(req.body)
             collection.insertOne(req.body)
                 .then((result) => {
-                    res.status(201).json({
-                        result
+                    res.status(201).json({ 
+                        ...result.ops[0], _id: result.insertedId 
                     })
                 }).catch((err) => {
                     res.status(500).json({

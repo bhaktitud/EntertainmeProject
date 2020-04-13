@@ -85,7 +85,7 @@ const resolvers = {
     Mutation: {
         // Kalo lu pake {}, returnnya jangan lupa ditulis. Kalo gapake kurawal, itu langsung return
         insertMovie: (_, payload) => {
-            console.log(payload, 'payload received on graphql server');
+            // console.log(payload, 'payload received on graphql server');
             return axios
                 .post('http://localhost:3001/movies', payload.eventInput)
                 .then(({ data }) => {
@@ -95,17 +95,16 @@ const resolvers = {
                     console.log(err)
                     return err
                 })
-        }
-        ,
-
-        insertSerie: (_, payload) => 
-            axios
+        },
+        insertSerie: (_, payload) => { 
+            return axios
                 .post('http://localhost:3002/tv', payload.eventInput)
                 .then(({ data }) => {       
-                    return data.result.ops[0]
+                    return data
                 }).catch((err) => {
                     return err
-                }),
+                })
+            },
 
         updateMovie: (_, payload) =>
             axios
