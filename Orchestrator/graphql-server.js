@@ -71,6 +71,7 @@ const resolvers = {
                 }).catch((err) => {
                     console.log(err)
                 }),
+        
         tv: () => 
             axios
                 .get('http://localhost:3002/tv')
@@ -82,20 +83,26 @@ const resolvers = {
     },
 
     Mutation: {
-        insertMovie: (_, payload) => 
-            axios
+        // Kalo lu pake {}, returnnya jangan lupa ditulis. Kalo gapake kurawal, itu langsung return
+        insertMovie: (_, payload) => {
+            console.log(payload, 'payload received on graphql server');
+            return axios
                 .post('http://localhost:3001/movies', payload.eventInput)
                 .then(({ data }) => {
-                    return payload.eventInput
+                    console.log(data);
+                    return data;
                 }).catch((err) => {
+                    console.log(err)
                     return err
-                }),
+                })
+        }
+        ,
 
         insertSerie: (_, payload) => 
             axios
                 .post('http://localhost:3002/tv', payload.eventInput)
                 .then(({ data }) => {       
-                    return payload.eventInput
+                    return data.result.ops[0]
                 }).catch((err) => {
                     return err
                 }),
@@ -110,6 +117,7 @@ const resolvers = {
                     tags: payload.eventInput.tags,
                 })
                 .then(function ({ data }) {
+                    // console.log(data)
                     return payload.eventInput
                 }).catch((err) => {
                     return err
@@ -151,8 +159,8 @@ const resolvers = {
     }
 }
 
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json())
+// app.use(express.urlencoded({ extended: false }))
+// app.use(express.json())
 
 const server = new ApolloServer({
     typeDefs: typeDefs,
