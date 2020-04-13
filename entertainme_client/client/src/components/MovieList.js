@@ -1,0 +1,72 @@
+import React from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
+
+import { makeStyles } from '@material-ui/core/styles';
+import CardComponent from './Card'
+import {
+    Container,
+    Fab
+} from '@material-ui/core'
+import AddIcon from '@material-ui/icons/Add';
+import InserForm from './InsertForm';
+import { useDispatch } from 'react-redux';
+import {setModalForm} from '../store/actions'
+
+const MOVIES = gql`
+    query {
+        movies {
+            title
+            overview
+            poster_path
+            popularity
+            tags
+        }
+    }
+`;
+
+const useStyles = makeStyles((theme) => ({
+    MovieContainer: {
+        display: 'flex',
+        paddingTop: '2em',
+        flexDirection : "row",
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        border: '1px solid black',
+    },
+    margin: {
+        margin: theme.spacing(1),
+        position: 'fixed',
+        left: '90%',
+        top: '90%'
+      },
+  }));
+
+
+
+export default function MovieList() {
+    const classes = useStyles();
+    const { loading, error, data } = useQuery(MOVIES);
+
+    const dispatch = useDispatch();
+
+    const onOpenModal = () => {
+        dispatch(setModalForm(true))
+    }
+    
+    if (loading) return <p>Loading Movies...</p>
+    if (error) return <p>Error</p>
+
+    return (
+        <Container className={classes.MovieContainer}>
+            <InserForm />
+            {data.movies.map((movie, index) => (
+                <CardComponent 
+                key={index} payload={movie}/>
+            ))}
+            <Fab color="secondary" aria-label="add" className={classes.margin} onClick={() => onOpenModal()}>
+                <AddIcon />
+            </Fab>
+        </Container>
+    );
+}
