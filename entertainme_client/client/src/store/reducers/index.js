@@ -1,12 +1,17 @@
 import {
     SET_MOVIES,
-    SET_MODAL_FORM
+    SET_MODAL_FORM,
+    SET_UPDATE_FORM,
+    SET_UPDATE_SERIE_FORM
 } from '../actions'
 
 
 const initialState = {
     movies: [],
-    modalStatus: false
+    modalStatus: false,
+    data: {},
+    serie: {},
+    updateStatus: false
 }
 
 export const reducers = (state = initialState, action) => {
@@ -21,6 +26,21 @@ export const reducers = (state = initialState, action) => {
             return {
                 ...state,
                 modalStatus: payload
+            }
+        case SET_UPDATE_FORM:
+            return {
+                ...state,
+                data: payload
+            }
+        case SET_UPDATE_SERIE_FORM:
+            return {
+                ...state,
+                serie: payload
+            }
+        case 'SET_UPDATE_FORM_STATUS':
+            return {
+                ...state,
+                updateStatus: payload
             }
         default:
             return state;

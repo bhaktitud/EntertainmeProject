@@ -61,6 +61,7 @@ MongoClient.connect(connectionString, {
         app.delete('/movies/:id', (req, res) => {
             collection.remove({_id: ObjectId(req.params.id)})
                 .then((result) => {
+                    // console.log(result.documents, 'delete data dari movie server')
                     res.status(200).json({
                         result
                     })

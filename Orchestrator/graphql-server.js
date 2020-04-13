@@ -36,7 +36,7 @@ const typeDefs = gql`
     }
 
     input UpdateInput {
-        _id: ID!
+        _id: String
         title: String
         overview: String
         poster_path: String
@@ -49,8 +49,8 @@ const typeDefs = gql`
         insertSerie(eventInput: EventInput): Serie
         updateMovie(eventInput: UpdateInput): Movie
         updateSerie(eventInput: UpdateInput): Serie
-        deleteMovie(_id: String!): Movie
-        deleteSerie(_id: String!): Serie
+        deleteMovie(_id: String): Movie
+        deleteSerie(_id: String): Serie
 
     }
 
@@ -99,15 +99,17 @@ const resolvers = {
         insertSerie: (_, payload) => { 
             return axios
                 .post('http://localhost:3002/tv', payload.eventInput)
-                .then(({ data }) => {       
+                .then(({ data }) => {      
+                    console.log(data) 
                     return data
                 }).catch((err) => {
                     return err
                 })
-            },
+        },
 
-        updateMovie: (_, payload) =>
-            axios
+        updateMovie: (_, payload) => {
+            console.log(payload, 'masuk update process')
+            return axios
                 .put(`http://localhost:3001/movies/${payload.eventInput._id}`, {
                     title: payload.eventInput.title,
                     overview: payload.eventInput.overview,
@@ -120,7 +122,8 @@ const resolvers = {
                     return payload.eventInput
                 }).catch((err) => {
                     return err
-                }), 
+                })
+        }, 
 
         updateSerie: (_, payload) => 
             axios

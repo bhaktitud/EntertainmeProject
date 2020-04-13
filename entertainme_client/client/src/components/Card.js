@@ -1,15 +1,47 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { Container, Avatar, Chip } from '@material-ui/core';
+import { 
+  Container, 
+  Avatar, 
+  Chip,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Button,
+  Typography 
+} from '@material-ui/core';
 import { deepOrange } from '@material-ui/core/colors';
 import Flippy, { FrontSide, BackSide } from 'react-flippy';
+import { useMutation } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
+import { useDispatch } from 'react-redux';
+import { setUpdateForm, setUpdateFormStatus } from '../store/actions'
+
+
+const DELETE_DATA = gql`
+    mutation($_id: String){
+      deleteMovie(_id: $_id) {
+        _id
+      }
+    }
+`;
+
+const MOVIES = gql`
+    query {
+        movies {
+            _id
+            title
+            overview
+            poster_path
+            popularity
+            tags
+        }
+    }
+`;
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -91,7 +123,33 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CardComponent(props) {
     const classes = useStyles();
-    const { title, overview, poster_path, popularity, tags } = props.payload
+    const { _id, title, overview, poster_path, popularity, tags } = props.payload
+    const [ deleteMovie ] = useMutation(DELETE_DATA)
+    
+
+    const dispatch = useDispatch()
+
+    const handleOnDelete = (id) => {
+      console.log(id)
+      deleteMovie({ 
+        variables: { _id: id },
+        update: (cache) => {
+          const { movies } = cache.readQuery({ query: MOVIES })
+          const newMovies = movies.filter(t => (t._id !== id));
+          cache.writeQuery({
+            query: MOVIES,
+            data: { movies: newMovies }
+          })
+        }
+      });
+    }
+
+    const handleOnUpdate = () => {
+      console.log(props.payload)
+      dispatch(setUpdateFormStatus(true))
+      dispatch(setUpdateForm(props.payload))
+    }
+
       return (
         <Flippy
         className={classes.FlippyContainer}
@@ -129,7 +187,6 @@ export default function CardComponent(props) {
                 </Typography>
               </Container>
               <Container className={classes.ChipContainer}>
-                <Typography variant="body2" component="p">
                   {tags.map((tag, index) => (
                     <Chip
                       key={index}
@@ -139,15 +196,14 @@ export default function CardComponent(props) {
                       size="small"
                     />
                   ))}
-                </Typography>
               </Container>
             </CardContent>
             </CardActionArea>
             <CardActions className={classes.CardActionContainer}>
-              <Button size="small" color="primary">
+              <Button size="small" color="primary" onClick={() => handleOnUpdate() }>
                 Update
               </Button>
-              <Button size="small" color="primary">
+              <Button size="small" color="primary" onClick={() => handleOnDelete(_id)}>
                 Delete
               </Button>
             </CardActions>

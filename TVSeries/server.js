@@ -34,6 +34,7 @@ MongoClient.connect(connectionString, {
         app.post('/tv', (req, res) => {
             collection.insertOne(req.body)
                 .then((result) => {
+                    console.log(result, 'tv server')
                     res.status(201).json({ 
                         ...result.ops[0], _id: result.insertedId 
                     })

@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
-import { useMutation } from '@apollo/react-hooks';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
+import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost'
 
 import { makeStyles } from '@material-ui/core/styles';
 import {
     TextField, 
     Button,
-    ButtonBase,
     Typography,
     Modal,
     Backdrop,
@@ -17,25 +16,14 @@ import {
     CardActions
 } from '@material-ui/core';
 import ChipInput from 'material-ui-chip-input';
-import {setModalForm} from '../store/actions';
+import {setUpdateFormStatus} from '../store/actions';
 
-const INSERT_DATA = gql`
+const UPDATE_MOVIE = gql`
     mutation(
-        $eventInput: EventInput
+        $eventInput: UpdateInput
     ) {
-        insertMovie(eventInput: $eventInput) {
-            title
-            overview
-            poster_path
-            popularity
-            tags
-        }
-    }
-`;
-
-const MOVIES = gql`
-    query {
-        movies {
+        updateMovie(eventInput: $eventInput) {
+            _id
             title
             overview
             poster_path
@@ -80,42 +68,39 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         borderRadius: '5%'
     },
+    ChipInputStyle: {
+        width: '55%'
+    }
   }));
 
-export default function InsertForm () {
+export default function UpdateMovieForm () {
 
     const classes = useStyles();
 
-    const [insertMovie ] = useMutation(INSERT_DATA, {
-        update(cache, { data : { insertMovie } }) {
-            const { movies } = cache.readQuery({ query: MOVIES });
-            cache.writeQuery({
-                query: MOVIES,
-                data: { movies: movies.concat([insertMovie]) }
-            })
-        }
-    })
+    const [updateMovie ] = useMutation(UPDATE_MOVIE)
+    
+    const dispatch = useDispatch()
+    const open = useSelector(state => state.updateStatus)
+    const data = useSelector(state => state.data)
 
     //localState
     const [ newTitle, setNewTitle ] = useState('')
     const [ newOverview, setNewOverview ] = useState('')
     const [ newPoster, setNewPoster ] = useState('')
-    const [ newPopularity, setNewPopularity ] = useState(0)
-    const [ newTags, setNewTags ] = useState(['movie'])
-
-    const dispatch = useDispatch()
-    const open = useSelector(state => state.modalStatus)
+    const [ newPopularity, setNewPopularity ] = useState('')
+    const [ newTags, setNewTags ] = useState([])
 
     const handleAddChip = (chips) => {
-        setNewTags([...newTags, ...chips])
+        setNewTags(chips)
     }
 
     const handleOnSubmit = (e) => {
         e.preventDefault()
-        // console.log(newTitle, newOverview, newPoster, newPopularity, newTags[newTags.length-1])
-        insertMovie({
+        console.log(data._id, newTitle, newOverview, newPoster, newPopularity, newTags)
+        updateMovie({
             variables: {
                 eventInput: {
+                    _id: data._id,
                     title: newTitle,
                     overview: newOverview,
                     poster_path: newPoster,
@@ -127,8 +112,16 @@ export default function InsertForm () {
     }
 
     const handleOnCancel = () => {
-        dispatch(setModalForm(false))
+        dispatch(setUpdateFormStatus(false))
     }
+
+    useEffect(() => {
+        setNewTitle(data.title)
+        setNewOverview(data.overview)
+        setNewPopularity(data.popularity)
+        setNewPoster(data.poster_path)
+        setNewTags(data.tags)
+    }, [data])
 
     return (
         <Modal
@@ -149,27 +142,28 @@ export default function InsertForm () {
             onSubmit={e => handleOnSubmit(e)}
         >
             <Card className={classes.InputContainer}>
-                <Typography component='p' variant="span">
-                    New Movie/Series
+                <Typography component='p' variant="h5">
+                    Update Movie
                 </Typography>
                 <CardContent className={classes.InputContainer}>
-                    <TextField id="movie-title" label="title" value={newTitle} onChange={(e) => setNewTitle(e.target.value)}/>
-                    <TextField id="movie-overview" label="overview" value={newOverview} onChange={(e) => setNewOverview(e.target.value)} />
-                    <TextField id="movie-poster" label="poster path" value={newPoster} onChange={(e) => setNewPoster(e.target.value)} />
-                    <TextField id="movie-popularity" label="popularity" value={newPopularity} onChange={(e) => setNewPopularity(Number(e.target.value))}/>
+                    <TextField id="movie-title" label="title" defaultValue={data.title} onChange={(e) => setNewTitle(e.target.value)}/>
+                    <TextField id="movie-overview" label="overview" defaultValue={data.overview} onChange={(e) => setNewOverview(e.target.value)} />
+                    <TextField id="movie-poster" label="poster path" defaultValue={data.poster_path} onChange={(e) => setNewPoster(e.target.value)} />
+                    <TextField id="movie-popularity" label="popularity" defaultValue={data.popularity} onChange={(e) => setNewPopularity(Number(e.target.value))}/>
                     <ChipInput
-                        value={newTags}
+                    className={classes.ChipInputStyle}
+                        defaultValue={data.tags}
                         onChange={(chips) => handleAddChip(chips)}
                         label="tag"
+                        allowDuplicates={false}
+                        fullWidth={true}
                     />
                 </CardContent>
                 <CardActions className={classes.ActionContainer}>
                     <Button variant="contained" style={{marginRight: '1%'}} onClick={() => handleOnCancel()}>Cancel</Button>
-                    <ButtonBase type="submit">
-                        <Button variant="contained" style={{marginLeft: '1%'}} color="primary" onClick={() => handleOnCancel()}>
-                            Submit
-                        </Button>
-                    </ButtonBase>
+                    <Button type="submit" variant="contained" style={{marginLeft: '1%'}} color="primary" onClick={() => handleOnCancel()}>
+                        Submit
+                    </Button>
                 </CardActions>
             </Card>
         </form>

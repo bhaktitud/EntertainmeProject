@@ -9,13 +9,15 @@ import {
     Fab
 } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add';
-import InserForm from './InsertForm';
+import InsertMovie from './InsertMovieForm';
+import UpdateMovieForm from './UpdateMovieForm'
 import { useDispatch } from 'react-redux';
-import {setModalForm} from '../store/actions'
+import { setModalForm } from '../store/actions'
 
 const MOVIES = gql`
     query {
         movies {
+            _id
             title
             overview
             poster_path
@@ -59,10 +61,11 @@ export default function MovieList() {
 
     return (
         <Container className={classes.MovieContainer}>
-            <InserForm />
+            <InsertMovie />
+            <UpdateMovieForm />
             {data.movies.map((movie, index) => (
                 <CardComponent 
-                key={index} payload={movie}/>
+                key={movie._id} payload={movie}/>
             ))}
             <Fab color="secondary" aria-label="add" className={classes.margin} onClick={() => onOpenModal()}>
                 <AddIcon />
