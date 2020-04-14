@@ -10,7 +10,7 @@ import {
 import { useHistory } from "react-router-dom";
 import MovieIcon from '@material-ui/icons/Movie';
 import TvIcon from '@material-ui/icons/Tv';
-
+import HomeIcon from '@material-ui/icons/Home';
 
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -49,6 +49,11 @@ export default function Navbar () {
       history.push('/series')
     }
 
+    const navToHome = (e) => {
+      e.preventDefault()
+      history.push('/')
+    }
+
     return (
         <AppBar position="static">
           <Container>
@@ -59,6 +64,11 @@ export default function Navbar () {
           <Container>
             <Breadcrumbs aria-label="breadcrumb">
               <Typography color="textPrimary">Navigate To >></Typography>
+              <Link color="inherit" href="" onClick={(e) => navToHome(e)}>
+                <Container style={{display: 'flex', paddingLeft: '0', paddingRight: '0'}}>
+                  <HomeIcon /> Home
+                </Container>
+              </Link>
               <Link color="inherit" href="" onClick={(e) => navToMovies(e)}>
                 <Container style={{display: 'flex', paddingLeft: '0', paddingRight: '0'}}>
                   <MovieIcon /> Movies

@@ -5,6 +5,7 @@ import './App.css';
 import MovieList  from './components/MovieList';
 import SeriesList from './components/SeriesList';
 import Navbar from './components/Navbar';
+import Home from './components/Home'
 import {
   BrowserRouter as Router,
   Switch,
@@ -22,10 +23,13 @@ function App() {
       <Router>
         <Navbar />
         <Switch>
-          <Route path='/movies'>
+          <Route path='/' exact>
+            <Home />
+          </Route>
+          <Route path='/movies' exact>
             <MovieList />
           </Route>
-          <Route path='/series'>
+          <Route path='/series' exact>
             <SeriesList />
           </Route>
         </Switch>

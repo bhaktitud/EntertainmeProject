@@ -10,7 +10,8 @@ import {
 } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add';
 import InsertMovie from './InsertMovieForm';
-import UpdateMovieForm from './UpdateMovieForm'
+import UpdateMovieForm from './UpdateMovieForm';
+import Loading from './Loading'
 import { useDispatch } from 'react-redux';
 import { setModalForm } from '../store/actions'
 
@@ -56,7 +57,7 @@ export default function MovieList() {
         dispatch(setModalForm(true))
     }
     
-    if (loading) return <p>Loading Movies...</p>
+    if (loading) return <Loading />
     if (error) return <p>Error</p>
 
     return (

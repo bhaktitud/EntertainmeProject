@@ -3,7 +3,10 @@ import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
 import { makeStyles } from '@material-ui/core/styles';
-import CardComponent from './CardSeries'
+import CardComponent from './CardSeries';
+
+import Loading from './Loading';
+
 import {
     Container,
     Fab
@@ -55,7 +58,7 @@ export default function SeriesList() {
         dispatch(setModalForm(true))
     }
 
-    if (loading) return <p>Loading Series...</p>
+    if (loading) return <Loading />
     if (error) return <p>Error</p>
 
     return (

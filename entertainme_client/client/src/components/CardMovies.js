@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { 
   Container, 
@@ -11,7 +11,11 @@ import {
   CardMedia,
   Button,
   Typography, 
-  Box
+  Box,
+  Dialog, 
+  DialogActions, 
+  DialogTitle, 
+  DialogContent, DialogContentText
 } from '@material-ui/core';
 import { deepOrange } from '@material-ui/core/colors';
 import Flippy, { FrontSide, BackSide } from 'react-flippy';
@@ -54,9 +58,17 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#181818',
     paddingLeft: '2%',
   },
+  CardContentLayout: {
+    width: '100%',
+    height:'100%',
+    maxHeight: '100%',
+    color: 'white',
+    display: 'flex',
+    flexDirection: 'column',
+
+  },
   FrontCardContainer:{
     backgroundColor: '#181818'
-
   },
   media: {
     height: '20rem',
@@ -117,9 +129,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
     width: '100%',
-    height: '10%',
-    maxHeight: '10%',
-    marginTop: '5%'
+    marginTop: '5%',
   }
   
 }));
@@ -127,6 +137,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CardComponent(props) {
     const classes = useStyles();
     const { _id, title, overview, poster_path, popularity, tags } = props.payload
+    const [ openConfirm, setConfirm ] = useState(false)
     const [ deleteMovie ] = useMutation(DELETE_DATA)
     
 
@@ -150,6 +161,14 @@ export default function CardComponent(props) {
       console.log(props.payload)
       dispatch(setUpdateFormStatus(true))
       dispatch(setUpdateForm(props.payload))
+    }
+
+    const openDeleteConfirm = () => {
+      setConfirm(true)
+    }
+
+    const closeDeleteConfirm = () => {
+      setConfirm(false)
     }
 
       return (
@@ -177,7 +196,7 @@ export default function CardComponent(props) {
           className={classes.BackSide}  
         >
         <Card className={classes.root}>
-          <CardActionArea>
+          <CardActionArea className={classes.CardContentLayout}>
             <CardContent>
               <Typography gutterBottom variant="h5" component="h2">
                 {title}
@@ -188,7 +207,7 @@ export default function CardComponent(props) {
                   {overview}
                 </Typography>
               </Container>
-              <Box className={classes.ChipContainer} overflow="visible" display='inline'>
+              <Box className={classes.ChipContainer} component='div' overflow="visible" display='inline'>
                   {tags.map((tag, index) => (
                     <Chip
                       key={index}
@@ -200,17 +219,36 @@ export default function CardComponent(props) {
                   ))}
               </Box>
             </CardContent>
+              <CardActions>
+                <Container className={classes.CardActionContainer}>
+                  <Button size="small" color="primary" onClick={() => handleOnUpdate() }>
+                    Update
+                  </Button>
+                  <Button size="small" color="primary" onClick={openDeleteConfirm}>
+                    Delete
+                  </Button>
+                    <Dialog 
+                      open={openConfirm}
+                      aria-labelledby="responsive-dialog-title"
+                    >
+                      <DialogTitle id="responsive-dialog-title">{"Delete confirmation"}</DialogTitle>
+                      <DialogContent>
+                        <DialogContentText>
+                          Do you really want to delete this data?
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button autoFocus onClick={closeDeleteConfirm} color="primary">
+                          Cancel
+                        </Button>
+                        <Button color="primary" onClick={() => handleOnDelete(_id)} autoFocus>
+                          Delete Anyway
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                </Container>
+              </CardActions>
             </CardActionArea>
-            <CardActions>
-              <Container className={classes.CardActionContainer}>
-                <Button size="small" color="primary" onClick={() => handleOnUpdate() }>
-                  Update
-                </Button>
-                <Button size="small" color="primary" onClick={() => handleOnDelete(_id)}>
-                  Delete
-                </Button>
-              </Container>
-            </CardActions>
         </Card>
         </BackSide>
       </Flippy>

@@ -105,7 +105,7 @@ export default function InsertMovieForm () {
     const [ newOverview, setNewOverview ] = useState('')
     const [ newPoster, setNewPoster ] = useState('')
     const [ newPopularity, setNewPopularity ] = useState(0)
-    const [ newTags, setNewTags ] = useState(['movie'])
+    const [ newTags, setNewTags ] = useState([])
 
     const dispatch = useDispatch()
     const open = useSelector(state => state.modalStatus)
@@ -128,10 +128,20 @@ export default function InsertMovieForm () {
                 }
             }
         })
+        setNewTitle('')
+        setNewOverview('')
+        setNewPopularity(0)
+        setNewPoster('')
+        setNewTags([])
     }
 
     const handleOnCancel = () => {
         dispatch(setModalForm(false))
+        setNewTitle('')
+        setNewOverview('')
+        setNewPopularity(0)
+        setNewPoster('')
+        setNewTags([])
     }
 
     return (
@@ -147,12 +157,12 @@ export default function InsertMovieForm () {
         }}
       >
         <Fade in={open}>
+        <Card className={classes.root}>
         <form 
             className={classes.root} 
             noValidate autoComplete="off"
             onSubmit={e => handleOnSubmit(e)}
         >
-            <Card className={classes.InputContainer}>
                 <Typography component='p' variant="h5">
                     New Movie
                 </Typography>
@@ -176,8 +186,8 @@ export default function InsertMovieForm () {
                         Submit
                     </Button>
                 </CardActions>
+                </form>
             </Card>
-        </form>
         </Fade>
       </Modal>
     

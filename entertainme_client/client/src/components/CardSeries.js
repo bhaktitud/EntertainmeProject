@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { 
   Container, 
@@ -10,7 +10,11 @@ import {
   CardContent,
   CardMedia,
   Button,
-  Typography 
+  Typography,
+  Dialog, 
+  DialogActions, 
+  DialogTitle, 
+  DialogContent, DialogContentText 
 } from '@material-ui/core';
 import { deepOrange } from '@material-ui/core/colors';
 import Flippy, { FrontSide, BackSide } from 'react-flippy';
@@ -124,6 +128,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CardComponent(props) {
     const classes = useStyles();
     const { _id, title, overview, poster_path, popularity, tags } = props.payload
+    const [ openConfirm, setConfirm ] = useState(false)
     const [ deleteSerie ] = useMutation(DELETE_DATA)
     
 
@@ -149,6 +154,14 @@ export default function CardComponent(props) {
       dispatch(setUpdateForm(props.payload))
     }
 
+    const openDeleteConfirm = () => {
+        setConfirm(true)
+      }
+  
+    const closeDeleteConfirm = () => {
+    setConfirm(false)
+    }
+  
       return (
         <Flippy
         className={classes.FlippyContainer}
@@ -199,12 +212,31 @@ export default function CardComponent(props) {
             </CardContent>
             </CardActionArea>
             <CardActions className={classes.CardActionContainer}>
-              <Button size="small" color="primary" onClick={() => handleOnUpdate() }>
-                Update
-              </Button>
-              <Button size="small" color="primary" onClick={() => handleOnDelete(_id)}>
-                Delete
-              </Button>
+                <Button size="small" color="primary" onClick={() => handleOnUpdate() }>
+                    Update
+                </Button>
+                <Button size="small" color="primary" onClick={openDeleteConfirm}>
+                    Delete
+                </Button>
+                    <Dialog 
+                    open={openConfirm}
+                    aria-labelledby="responsive-dialog-title"
+                    >
+                        <DialogTitle id="responsive-dialog-title">{"Delete confirmation"}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                            Do you really want to delete this data?
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button autoFocus onClick={closeDeleteConfirm} color="primary">
+                            Cancel
+                            </Button>
+                            <Button color="primary" onClick={() => handleOnDelete(_id)} autoFocus>
+                            Delete Anyway
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
             </CardActions>
         </Card>
         </BackSide>
