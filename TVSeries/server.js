@@ -61,7 +61,7 @@ MongoClient.connect(connectionString, {
 
         //DELETE
         app.delete('/tv/:id', (req, res) => {
-            collection.remove({_id: ObjectId(req.params.id)})
+            collection.deleteOne({_id: ObjectId(req.params.id)})
                 .then((result) => {
                     res.status(200).json({
                         result
