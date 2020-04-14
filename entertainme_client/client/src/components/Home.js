@@ -24,6 +24,10 @@ export default function Home () {
 
     const imageList = [
         {
+            name: 'The Way Back',
+            url : 'https://miro.medium.com/max/2560/1*7DdhHOESLi79s521KFDe3A.jpeg'
+        },
+        {
             name : "Captain America",
             url: 'https://wallpapersite.com/images/pages/pic_w/98.jpg'
         },
@@ -34,7 +38,7 @@ export default function Home () {
         {
             name : 'Series',
             url : 'https://lifegoeson360.online/wp-content/uploads/2019/09/tv-series.jpg'
-        }
+        },
     ]
 
     return (

@@ -137,12 +137,12 @@ export default function UpdateSerieForm () {
         }}
       >
         <Fade in={open}>
+        <Card className={classes.root}>
         <form 
             className={classes.root} 
             noValidate autoComplete="off"
             onSubmit={e => handleOnSubmit(e)}
         >
-            <Card className={classes.InputContainer}>
                 <Typography component='p' variant="h5">
                     Update Serie
                 </Typography>
@@ -166,8 +166,8 @@ export default function UpdateSerieForm () {
                         Submit
                     </Button>
                 </CardActions>
+                </form>
             </Card>
-        </form>
         </Fade>
       </Modal>
     
