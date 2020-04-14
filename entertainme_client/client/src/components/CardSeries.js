@@ -22,15 +22,15 @@ import { setUpdateForm, setUpdateFormStatus } from '../store/actions'
 
 const DELETE_DATA = gql`
     mutation($_id: String){
-      deleteMovie(_id: $_id) {
+      deleteSerie(_id: $_id) {
         _id
       }
     }
-`;
+`; // this part makes it hard to convert the component to be reusable
 
-const MOVIES = gql`
+const SERIES = gql`
     query {
-        movies {
+        tv {
             _id
             title
             overview
@@ -124,21 +124,20 @@ const useStyles = makeStyles((theme) => ({
 export default function CardComponent(props) {
     const classes = useStyles();
     const { _id, title, overview, poster_path, popularity, tags } = props.payload
-    const [ deleteMovie ] = useMutation(DELETE_DATA)
+    const [ deleteSerie ] = useMutation(DELETE_DATA)
     
 
     const dispatch = useDispatch()
 
     const handleOnDelete = (id) => {
-      console.log(id)
-      deleteMovie({ 
+      deleteSerie({ 
         variables: { _id: id },
         update: (cache) => {
-          const { movies } = cache.readQuery({ query: MOVIES })
-          const newMovies = movies.filter(t => (t._id !== id));
+          const { tv } = cache.readQuery({ query: SERIES })
+          const newTv = tv.filter(t => (t._id !== id));
           cache.writeQuery({
-            query: MOVIES,
-            data: { movies: newMovies }
+            query: SERIES,
+            data: { tv: newTv }
           })
         }
       });

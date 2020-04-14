@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
 import { makeStyles } from '@material-ui/core/styles';
-import CardComponent from './Card'
+import CardComponent from './CardMovies'
 import {
     Container,
     Fab

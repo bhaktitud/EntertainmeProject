@@ -8,6 +8,10 @@ import {
 } from '@material-ui/core';
 
 import { useHistory } from "react-router-dom";
+import MovieIcon from '@material-ui/icons/Movie';
+import TvIcon from '@material-ui/icons/Tv';
+
+
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -56,10 +60,14 @@ export default function Navbar () {
             <Breadcrumbs aria-label="breadcrumb">
               <Typography color="textPrimary">Navigate To >></Typography>
               <Link color="inherit" href="" onClick={(e) => navToMovies(e)}>
-                Movies
+                <Container style={{display: 'flex', paddingLeft: '0', paddingRight: '0'}}>
+                  <MovieIcon /> Movies
+                </Container>
               </Link>
               <Link color="inherit" href="" onClick={(e) => navToSeries(e)}>
-                Series
+              <Container style={{display: 'flex', paddingLeft: '0', paddingRight: '0'}}>
+                <TvIcon /> Series
+              </Container>  
               </Link>
             </Breadcrumbs>
           </Container>

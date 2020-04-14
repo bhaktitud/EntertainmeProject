@@ -34,7 +34,7 @@ MongoClient.connect(connectionString, {
         app.post('/movies', (req, res) => {
             db.collection('movie').insertOne(req.body)
                 .then((result) => {
-                    console.log(result)
+                    // console.log(result)
                     res.status(201).json({ ...result.ops[0], _id: result.insertedId })
                 }).catch((err) => {
                     res.status(500).json({
@@ -45,8 +45,9 @@ MongoClient.connect(connectionString, {
 
         //UPDATE
         app.put('/movies/:id', (req, res) => {
-            db.collection('movie').update({_id: ObjectId(req.params.id)}, {$set: req.body})
+            db.collection('movie').updateOne({_id: ObjectId(req.params.id)}, {$set: req.body})
                 .then((result) => {
+                    console.log(result)
                     res.status(200).json({
                         result
                     })
